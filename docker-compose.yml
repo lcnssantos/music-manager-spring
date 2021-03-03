@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  db:
+    container_name: music-manager
+    image: mariadb:latest
+    ports:
+      - 3306:3306
+    volumes:
+      - /var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=music-manager
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=secret
