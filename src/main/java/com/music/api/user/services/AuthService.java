@@ -3,6 +3,7 @@ package com.music.api.user.services;
 import com.music.api.user.entity.User;
 import com.music.api.user.errors.ExpiredJWTError;
 import com.music.api.user.errors.InvalidUserCredentialError;
+import com.music.api.user.errors.UserNotActiveError;
 import com.music.api.user.errors.UserNotFoundedError;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +21,20 @@ public class AuthService {
     @Autowired
     private HashService hashService;
 
-    public String login(String email, String password) throws InvalidUserCredentialError, UserNotFoundedError {
+    public String login(String email, String password) throws InvalidUserCredentialError, UserNotFoundedError, UserNotActiveError {
         User user = this.getUser(email, password);
+
+        if (!user.getActive()) {
+            throw new UserNotActiveError("User is not active");
+        }
+
         return this.jwtService.sign(user.getId().toString());
     }
 
     private User getUser(String email, String password) throws InvalidUserCredentialError, UserNotFoundedError {
         User user = this.userService.getByEmail(email);
 
-        if(this.hashService.compare(user.getPassword(), password)) {
+        if (this.hashService.compare(user.getPassword(), password)) {
             return user;
         }
 
@@ -44,7 +50,7 @@ public class AuthService {
         Long id = this.jwtService.decode(jwt);
         Optional<User> userOptional = this.userService.getById(id);
 
-        if(userOptional.isPresent()) {
+        if (userOptional.isPresent()) {
             return userOptional.get();
         }
 

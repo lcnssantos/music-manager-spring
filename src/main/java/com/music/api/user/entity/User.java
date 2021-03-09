@@ -33,6 +33,10 @@ public class User implements Serializable {
     @Setter
     private String email;
 
+    @Column(nullable = false, unique = true)
+    @Setter
+    private Boolean active;
+
     @Column(nullable = false)
     private Date date;
 

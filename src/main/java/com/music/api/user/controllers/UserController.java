@@ -8,6 +8,7 @@ import com.music.api.user.requests.CreateUserRequest;
 import com.music.api.user.requests.DeleteUserRequest;
 import com.music.api.user.responses.UserResponse;
 import com.music.api.user.services.UserService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -72,6 +73,16 @@ public class UserController {
         try {
             User user = (User) request.getAttribute("user");
             this.userService.addGenre(user, Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping(value = "/activate/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity activateUser(HttpServletRequest request, @PathVariable("userId") String userId) {
+        try {
+            this.userService.activateAccount(Long.parseLong(userId));
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

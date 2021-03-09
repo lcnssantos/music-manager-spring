@@ -31,6 +31,7 @@ public class UserService {
         user.setName(userRequest.name);
         user.setPassword(hashedPassword);
         user.setEmail(userRequest.email);
+        user.setActive(false);
 
         return this.userRepository.save(user);
     }
@@ -75,5 +76,14 @@ public class UserService {
         Genre genre = this.genreService.getById(id);
         user.addGenre(genre);
         this.userRepository.save(user);
+    }
+
+    public void activateAccount(Long id) {
+        Optional<User> user = this.userRepository.findById(id);
+
+        if(user.isPresent()) {
+            user.get().setActive(true);
+            this.userRepository.save(user.get());
+        }
     }
 }
